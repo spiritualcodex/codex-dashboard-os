@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -101,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
             <Crown size={14} className="text-purple-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-zinc-200 truncate">Rarstar Bey</p>
+            <p className="text-xs font-semibold text-zinc-200 truncate">Rarstar Thirteen El Bey</p>
             <p className="text-[10px] text-zinc-500 uppercase font-bold">Admin OS</p>
           </div>
         </div>
