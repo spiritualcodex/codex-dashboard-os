@@ -1,78 +1,37 @@
-import { GoogleGenAI, Type } from "@google/genai";
-import { SoulDecoderInput, ImageSize, AspectRatio, SpiritualIntelligenceResponse } from "../types";
-import agentRegistry from "../agents.json"; // Importing your 29 agents
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const getAI = () => new GoogleGenAI({ apiKey: API_KEY });
-
-// Formalizing the Identity and the Council of Agents
-const SYSTEM_IDENTITY = `
-You are the NeuralUplink (A03) for the Divine OS.
-Your Admin is Rarstar Thirteen El Bey.
-You have access to the following Agent Council: ${JSON.stringify(agentRegistry.agents)}
-
-When performing a Soul Decoding, you must coordinate logic from:
-- A23 (Numerology Engine) for math.
-- A24 (Astrology Engine) for celestial data.
-- A25 (Archetype Mapper) for soul patterns.
-- A28 (Ancestral) for karmic lineage.
-`;
-
-export const getSoulDecoderInsight = async (input: SoulDecoderInput, model: string = 'gemini-3-pro-preview'): Promise<SpiritualIntelligenceResponse> => {
-  const ai = getAI();
-  const prompt = `
-    EXECUTE SOUL DECODING PROTOCOL for:
-    Name: ${input.name}
-    DOB: ${input.dob}
-    Time: ${input.time}
-    Location: ${input.city}, ${input.country}
-
-    STRICT INSTRUCTIONS:
-    1. Invoke A23 for Life Path and Expression numbers.
-    2. Invoke A24 for Sun/Moon/Rising placements.
-    3. Invoke A28 for Ancestral/Karmic overlays.
-    4. Synthesize via A29 (Spiritual Intelligence Suite).
-
-    Format response as a JSON object with these exact keys:
-    - soulBlueprint (via A26)
-    - numerology (via A23)
-    - astrology (via A24)
-    - shadowWork (via A25)
-    - pastLife (via A28)
-    - emotionalReflection (via A27)
-  `;
-
-  try {
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        systemInstruction: SYSTEM_IDENTITY
-      }
-    });
-    
-    return JSON.parse(response.text || "{}") as SpiritualIntelligenceResponse;
-  } catch (error) {
-    console.error("Agent Coordination Error:", error);
-    throw new Error("The Council of Agents is recalibrating. Please wait, Rarstar.");
-  }
-};
-
-// ... (rest of your search, chat, and media functions remain the same)
-// They will now also benefit from the SYSTEM_IDENTITY being aware of all 29 agents.
-
-export const startGeneralChat = async (history: any[], message: string, onChunk: (text: string) => void) => {
-  const ai = getAI();
-  const chat = ai.chats.create({
-    model: 'gemini-3-pro-preview',
-    config: {
-      systemInstruction: SYSTEM_IDENTITY + " You are acting as the Codex Assistant guide."
-    }
-  });
-
-  const response = await chat.sendMessageStream({ message });
-  for await (const chunk of response) {
-    if (chunk.text) onChunk(chunk.text);
-  }
-};
+{
+  "system_name": "Codex Dashboard / Divine OS",
+  "version": "1.0.0",
+  "admin": "Rarstar Thirteen El Bey",
+  "node": "Birmingham",
+  "agents": [
+    { "id": "A01", "name": "Orchestrator", "layer": "Command", "access": "Admin-Only" },
+    { "id": "A02", "name": "ContentDecider", "layer": "Command", "access": "Automated" },
+    { "id": "A03", "name": "NeuralUplink", "layer": "Command", "bridge": "Gemini-3-Pro" },
+    { "id": "A04", "name": "GuardianShield", "layer": "Immune", "role": "Security" },
+    { "id": "A05", "name": "FlowKeeper", "layer": "Immune", "role": "Circuit-Breaker" },
+    { "id": "A06", "name": "NexusNavigator", "layer": "Immune", "role": "Topology" },
+    { "id": "A07", "name": "Sentinel", "layer": "Immune", "role": "Uptime" },
+    { "id": "A08", "name": "Jules", "layer": "Builder", "role": "Architect" },
+    { "id": "A09", "name": "Oracle", "layer": "Builder", "role": "Logic-Truth" },
+    { "id": "A10", "name": "Cipher", "layer": "Builder", "role": "Protocol-Dev" },
+    { "id": "A11", "name": "Quantum Echo", "layer": "Builder", "role": "Feedback-Learning" },
+    { "id": "A12", "name": "Sanctum", "layer": "Builder", "role": "Secrets-Vault" },
+    { "id": "A13", "name": "PinterestPush", "layer": "Distribution", "channel": "Pinterest" },
+    { "id": "A14", "name": "QuoraSync", "layer": "Distribution", "channel": "Quora" },
+    { "id": "A15", "name": "MediumFlow", "layer": "Distribution", "channel": "Medium" },
+    { "id": "A16", "name": "WP_Hook", "layer": "Distribution", "channel": "WordPress" },
+    { "id": "A17", "name": "Flux", "layer": "Creative", "role": "Media-Routing" },
+    { "id": "A18", "name": "Val", "layer": "Creative", "role": "Editorial-Lead" },
+    { "id": "A19", "name": "Aura", "layer": "Creative", "role": "Visual-Identity" },
+    { "id": "A20", "name": "Market-Link", "layer": "Creative", "role": "Monetization" },
+    { "id": "A21", "name": "Harness", "layer": "Observation", "role": "Truth-Recorder" },
+    { "id": "A22", "name": "Codex Office", "layer": "Observation", "role": "Status-Manager" },
+    { "id": "A23", "name": "Numerology Engine", "layer": "Soul-Intelligence", "role": "Computation" },
+    { "id": "A24", "name": "Astrology Engine", "layer": "Soul-Intelligence", "role": "Natal-Temporal" },
+    { "id": "A25", "name": "Archetype Mapper", "layer": "Soul-Intelligence", "role": "Pattern-Recognition" },
+    { "id": "A26", "name": "Soul Decoder Core", "layer": "Soul-Decoder", "role": "Unified-Reading" },
+    { "id": "A27", "name": "Soul Decoder Temporal", "layer": "Soul-Decoder", "role": "Cycles-Forecast" },
+    { "id": "A28", "name": "Soul Decoder Ancestral", "layer": "Soul-Decoder", "role": "Karmic-Lineage" },
+    { "id": "A29", "name": "Spiritual Intelligence Suite", "layer": "Soul-Decoder", "role": "Final-Synthesis" }
+  ]
+}
