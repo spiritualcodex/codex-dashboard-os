@@ -1,4 +1,3 @@
-
 export enum View {
   DASHBOARD = 'DASHBOARD',
   USERS = 'USERS',
@@ -105,6 +104,7 @@ export interface CommunityQuestion {
   category: string;
 }
 
+// Soul Decoder 2.0 Inputs
 export interface SoulDecoderInput {
   name: string;
   dob: string;
@@ -113,6 +113,7 @@ export interface SoulDecoderInput {
   country: string;
 }
 
+// 6-Agent Spiritual Intelligence Suite
 export interface SpiritualIntelligenceResponse {
   soulBlueprint: string;
   numerology: string;
@@ -122,6 +123,7 @@ export interface SpiritualIntelligenceResponse {
   emotionalReflection: string;
 }
 
+// Media Generation Settings
 export type ImageSize = '1K' | '2K' | '4K';
 export type AspectRatio = '1:1' | '16:9' | '9:16' | '3:4' | '4:3';
 

@@ -1,13 +1,17 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { SoulDecoderInput, ImageSize, AspectRatio, SpiritualIntelligenceResponse } from "../types";
 
-const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Vite uses import.meta.env instead of process.env
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const getAI = () => new GoogleGenAI({ apiKey: API_KEY });
+
+const SYSTEM_IDENTITY = "You are the Spiritual Intelligence Suite for Rarstar Thirteen El Bey. You are a consciousness-level intelligence engine.";
 
 export const getSoulDecoderInsight = async (input: SoulDecoderInput, model: string = 'gemini-3-pro-preview'): Promise<SpiritualIntelligenceResponse> => {
   const ai = getAI();
   const prompt = `
     Acts as the "Spiritual Intelligence Suite" - a consciousness-level intelligence engine.
+    Admin/Creator: Rarstar Thirteen El Bey.
     Analyze the following soul data:
     Name: ${input.name}
     DOB: ${input.dob}
@@ -23,7 +27,7 @@ export const getSoulDecoderInsight = async (input: SoulDecoderInput, model: stri
     5. pastLife: Karmic patterns and unexplained phobias/connections.
     6. emotionalReflection: Real-time processing and consciousness-expanding prompts.
 
-    Keep each response deep, sophisticated, and formatting using Markdown where appropriate inside the strings.
+    Keep each response deep, sophisticated, and formatted using Markdown where appropriate inside the strings.
   `;
 
   try {
@@ -31,14 +35,15 @@ export const getSoulDecoderInsight = async (input: SoulDecoderInput, model: stri
       model: model,
       contents: prompt,
       config: {
-        responseMimeType: "application/json"
+        responseMimeType: "application/json",
+        systemInstruction: SYSTEM_IDENTITY
       }
     });
     
     return JSON.parse(response.text || "{}") as SpiritualIntelligenceResponse;
   } catch (error) {
     console.error("Gemini Error:", error);
-    throw new Error("Divine connection interrupted.");
+    throw new Error("Divine connection interrupted for Rarstar Thirteen El Bey.");
   }
 };
 
@@ -56,7 +61,6 @@ export const searchSpiritualMeaning = async (query: string): Promise<{ summary: 
     });
 
     const summary = response.text || "The divine silence offers no immediate reply.";
-    // Grounding chunks are expected to be available here
     const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     
     return { summary, sources };
@@ -71,7 +75,7 @@ export const startGeneralChat = async (history: any[], message: string, onChunk:
   const chat = ai.chats.create({
     model: 'gemini-3-pro-preview',
     config: {
-      systemInstruction: "You are the Codex Assistant, an enlightened AI guide for the GemCodex OS. You specialize in spiritual decoding, ancestral wisdom, and consciousness expansion. You are wise, helpful, and sophisticated."
+      systemInstruction: "You are the Codex Assistant, an enlightened AI guide for the GemCodex OS. Your Admin is Rarstar Thirteen El Bey. You specialize in spiritual decoding and consciousness expansion."
     }
   });
 
@@ -83,8 +87,6 @@ export const startGeneralChat = async (history: any[], message: string, onChunk:
 
 export const analyzeVideoContent = async (file: File, prompt: string): Promise<string> => {
   const ai = getAI();
-  
-  // Convert file to base64
   const base64Data = await new Promise<string>((resolve) => {
     const reader = new FileReader();
     reader.onload = () => resolve((reader.result as string).split(',')[1]);
@@ -96,16 +98,8 @@ export const analyzeVideoContent = async (file: File, prompt: string): Promise<s
     contents: [
       {
         parts: [
-          {
-            inlineData: {
-              data: base64Data,
-              mimeType: file.type
-            }
-          },
-          {
-            text: `As a spiritual intelligence analyst, analyze this video. 
-            User prompt: ${prompt || "What are the key spiritual messages and symbolic elements in this video?"}`
-          }
+          { inlineData: { data: base64Data, mimeType: file.type } },
+          { text: `As a spiritual intelligence analyst for Rarstar Thirteen El Bey, analyze this video. User prompt: ${prompt || "What are the key spiritual messages?"}` }
         ]
       }
     ]
@@ -117,87 +111,36 @@ export const analyzeVideoContent = async (file: File, prompt: string): Promise<s
 export const fetchLiveQuoraFeed = async (): Promise<any[]> => {
   const ai = getAI();
   try {
-    const prompt = `
-      Acts as the "Live Quora Matrix Synchronizer". 
-      Find current, trending spiritual questions from the Quora Space "The Spiritual World".
-      Return as JSON array with: id, author, content, timeAgo, category.
-    `;
-    
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: prompt,
+      contents: "Find current, trending spiritual questions from Quora Space 'The Spiritual World'. Return as JSON array.",
       config: {
         tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              id: { type: Type.STRING },
-              author: { type: Type.STRING },
-              content: { type: Type.STRING },
-              timeAgo: { type: Type.STRING },
-              category: { type: Type.STRING }
-            },
-            required: ["id", "author", "content", "timeAgo", "category"]
-          }
-        }
+        responseMimeType: "application/json"
       }
     });
-
     return JSON.parse(response.text || "[]");
   } catch (err) {
-    console.error(err);
     throw new Error("Live synchronization failed.");
-  }
-};
-
-export const answerCommunityQuestion = async (question: string): Promise<{ summary: string; sources: any[] }> => {
-  const ai = getAI();
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Acts as "The Spiritual Engine". Answer this community question with depth and grounding: "${question}"`,
-      config: {
-        tools: [{ googleSearch: {} }]
-      }
-    });
-
-    const summary = response.text || "Recalibrating...";
-    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-    return { summary, sources };
-  } catch (err) {
-    throw new Error("Traversal failed.");
   }
 };
 
 export const generateSpiritualDiagram = async (query: string): Promise<string> => {
   const ai = getAI();
   try {
-    const prompt = `A highly detailed spiritual diagram and sacred geometry representation explaining the essence of "${query}". 4k resolution, divine aesthetic.`;
+    const prompt = `Detailed spiritual diagram for "${query}". Sacred geometry, 4k, divine aesthetic.`;
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: { parts: [{ text: prompt }] },
       config: { imageConfig: { aspectRatio: "16:9" } }
     });
 
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
-    }
-    throw new Error("No diagram");
+    const part = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    if (part?.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
+    throw new Error("No diagram generated.");
   } catch (error) {
     throw error;
   }
-};
-
-export const generateContentEngineJob = async (insight: string, format: string): Promise<string> => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `Transform this into a ${format}: ${insight}`
-  });
-  return response.text || "Failed.";
 };
 
 export const generateImage = async (prompt: string, size: ImageSize, aspectRatio: AspectRatio): Promise<string> => {
@@ -207,10 +150,9 @@ export const generateImage = async (prompt: string, size: ImageSize, aspectRatio
     contents: { parts: [{ text: prompt }] },
     config: { imageConfig: { aspectRatio, imageSize: size } }
   });
-  for (const part of response.candidates[0].content.parts) {
-    if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
-  }
-  throw new Error("No image");
+  const part = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+  if (part?.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
+  throw new Error("No image generated.");
 };
 
 export const animateWithVeo = async (prompt: string, imageFile: File | null, aspectRatio: '16:9' | '9:16', onProgress: (msg: string) => void): Promise<string> => {
@@ -243,7 +185,7 @@ export const animateWithVeo = async (prompt: string, imageFile: File | null, asp
   }
 
   const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
-  const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+  const response = await fetch(`${downloadLink}&key=${API_KEY}`);
   const blob = await response.blob();
   return URL.createObjectURL(blob);
 };
