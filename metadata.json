@@ -1,0 +1,10 @@
+
+{
+  "name": "Codex Dashboard OS",
+  "description": "A sophisticated spiritual wellness operating system for managing knowledge, daily guidance, and personalized soul decoding.",
+  "requestFramePermissions": [
+    "geolocation",
+    "camera",
+    "microphone"
+  ]
+}
